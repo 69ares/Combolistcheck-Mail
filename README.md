@@ -5,9 +5,6 @@ Combolist accetta combo suddivise in "username.txt" e "password.txt", il suo sco
 
 Email supportate:
 Libero
-
-Future email supportate:
 Outlook
 Gmail
 Tiscali
-Protonmail
