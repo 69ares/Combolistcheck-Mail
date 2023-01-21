@@ -1,7 +1,9 @@
 import imaplib
 from tqdm import tqdm
+import shutil
+import os
 
-servers = ["imap.libero.it", "imap.gmail.com", "imap.yahoo.com", "imap.outlook.com"]
+servers = ["imap.libero.it", "imap.tiscali.it", "imap.gmail.com", "imap.yahoo.com", "imap.outlook.com"]
 
 # chiedere all'utente di scegliere il server IMAP
 print("Scegli il server IMAP:")
@@ -14,6 +16,12 @@ imap_server = servers[server_index - 1]
 username_file = 'username.txt'
 password_file = 'password.txt'
 
+# crea copie temporanee dei file
+temp_username_file = "temp_" + username_file
+temp_password_file = "temp_" + password_file
+shutil.copy(username_file, temp_username_file)
+shutil.copy(password_file, temp_password_file)
+
 # chiedere all'utente il mittente da cercare
 sender = input("Inserisci il mittente da cercare: ")
 
@@ -21,7 +29,7 @@ message_counter = 0
 accounts = []
 failed_accounts = []
 
-with open(username_file, 'r') as uf, open(password_file, 'r') as pf:
+with open(temp_username_file, 'r') as uf, open(temp_password_file, 'r') as pf:
     username_lines = uf.readlines()
     password_lines = pf.readlines()
 
@@ -50,17 +58,23 @@ for i in tqdm(range(min(len(username_lines), len(password_lines))), desc="Progre
         else:
             print(f"Errore durante la chiusura della connessione per l'account {email_address}: {e}")
             failed_accounts.append(email_address)
-    with open(username_file, "w") as file:
+    # Elimina la prima riga dei file temporanei
+    with open(temp_username_file, "w") as file:
         for line in username_lines[i + 1:]:
             file.write(line)
-    with open(password_file, "w") as file:
+    with open(temp_password_file, "w") as file:
         for line in password_lines[i + 1:]:
             file.write(line)
+
+# Elimina i file temporanei
+os.remove(temp_username_file)
+os.remove(temp_password_file)
 
 print("\033[92mTotale messaggi trovati da {sender}: {message_counter}\033[0m")
 print("\033[92mAccount utilizzati:\033[0m")
 for account in accounts:
     print("\033[92m- " + account + "\033[0m")
+
 
 if len(failed_accounts) > 0:
     print("\033[91mAccount su cui non è stato possibile effettuare l'accesso:")
