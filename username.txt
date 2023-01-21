@@ -1,0 +1,4 @@
+test@mail.it
+test2@libero.it
+test3@gmail.com
+ecc
